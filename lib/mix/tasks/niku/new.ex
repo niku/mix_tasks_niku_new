@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.New do
+defmodule Mix.Tasks.Niku.New do
   use Mix.Task
 
   import Mix.Generator
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.New do
   Creates a new Elixir project.
   It expects the path of the project as argument.
 
-      mix new PATH [--sup] [--module MODULE] [--app APP] [--umbrella]
+      mix niku.new PATH [--sup] [--module MODULE] [--app APP] [--umbrella]
 
   A project at the given PATH will be created. The
   application name and module name will be retrieved
@@ -30,15 +30,15 @@ defmodule Mix.Tasks.New do
 
   ## Examples
 
-      mix new hello_world
+      mix niku.new hello_world
 
   Is equivalent to:
 
-      mix new hello_world --module HelloWorld
+      mix niku.new hello_world --module HelloWorld
 
   To generate an app with a supervision tree and an application callback:
 
-      mix new hello_world --sup
+      mix niku.new hello_world --sup
 
   """
 
@@ -50,7 +50,7 @@ defmodule Mix.Tasks.New do
 
     case argv do
       [] ->
-        Mix.raise "Expected PATH to be given, please use \"mix new PATH\""
+        Mix.raise "Expected PATH to be given, please use \"mix niku.new PATH\""
       [path | _] ->
         app = opts[:app] || Path.basename(Path.expand(path))
         check_application_name!(app, !opts[:app])
@@ -119,11 +119,11 @@ defmodule Mix.Tasks.New do
   defp otp_app(mod, true) do
     "    [extra_applications: [:logger],\n     mod: {#{mod}.Application, []}]"
   end
-  
+
   defp cd_path(".") do
     ""
   end
-  
+
   defp cd_path(path) do
     "cd #{path}\n    "
   end
@@ -147,7 +147,7 @@ defmodule Mix.Tasks.New do
     where you can create and host many apps:
 
         #{cd_path(path)}cd apps
-        mix new my_app
+        mix niku.new my_app
 
     Commands like "mix compile" and "mix test" when executed
     in the umbrella project root will automatically run

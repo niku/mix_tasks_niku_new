@@ -1,19 +1,18 @@
-# Mix.Tasks.Neww
+# Mix.Tasks.Niku.New
 
 **TODO: Add description**
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `mix_tasks_neww` to your list of dependencies in `mix.exs`:
+by adding `mix_tasks_niku_new` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:mix_tasks_neww, "~> 0.1.0"}]
+  [{:mix_tasks_niku_new, "~> 0.1.0"}]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/mix_tasks_neww](https://hexdocs.pm/mix_tasks_neww).
-
+be found at [https://hexdocs.pm/mix_tasks_niku_new](https://hexdocs.pm/mix_tasks_niku_new).

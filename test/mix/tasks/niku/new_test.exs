@@ -1,6 +1,6 @@
-defmodule Mix.Tasks.NewwTest do
+defmodule Mix.Tasks.Niku.NewTest do
   use ExUnit.Case
-  doctest Mix.Tasks.Neww
+  doctest Mix.Tasks.Niku.New
 
   test "the truth" do
     assert 1 + 1 == 2

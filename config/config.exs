@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :mix_tasks_neww, key: :value
+#     config :mix_tasks_niku_new, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:mix_tasks_neww, :key)
+#     Application.get_env(:mix_tasks_niku_new, :key)
 #
 # Or configure a 3rd-party app:
 #

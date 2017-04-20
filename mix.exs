@@ -1,8 +1,8 @@
-defmodule Mix.Tasks.Neww.Mixfile do
+defmodule Mix.Tasks.Niku.New.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :mix_tasks_neww,
+    [app: :mix_tasks_niku_new,
      version: "0.1.0",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
