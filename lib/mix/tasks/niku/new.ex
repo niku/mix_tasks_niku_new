@@ -74,10 +74,11 @@ defmodule Mix.Tasks.Niku.New do
 
   defp generate(app, mod, path, opts) do
     assigns = [app: app, mod: mod, otp_app: otp_app(mod, !!opts[:sup]),
-               version: get_version(System.version)]
+               version: get_version(System.version), user: System.get_env("USER"), year: Date.utc_today.year]
 
     create_file "README.md",  readme_template(assigns)
     create_file ".gitignore", gitignore_text()
+    create_file "LICENSE", license_template(assigns)
 
     if in_umbrella?() do
       create_file "mix.exs", mixfile_apps_template(assigns)
@@ -129,9 +130,10 @@ defmodule Mix.Tasks.Niku.New do
   end
 
   defp generate_umbrella(_app, mod, path, _opts) do
-    assigns = [app: nil, mod: mod]
+    assigns = [app: nil, mod: mod, user: System.get_env("USER"), year: Date.utc_today.year]
 
     create_file ".gitignore", gitignore_text()
+    create_file "LICENSE", license_template(assigns)
     create_file "README.md", readme_template(assigns)
     create_file "mix.exs", mixfile_umbrella_template(assigns)
 
@@ -231,6 +233,30 @@ defmodule Mix.Tasks.Niku.New do
   and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
   be found at [https://hexdocs.pm/<%= @app %>](https://hexdocs.pm/<%= @app %>).
   <% end %>
+  """
+
+  embed_template :license, """
+  MIT License
+
+  Copyright (c) <%= @year %> <%= @user %>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
   """
 
   embed_text :gitignore, """
