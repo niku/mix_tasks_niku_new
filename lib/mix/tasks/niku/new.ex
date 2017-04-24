@@ -292,7 +292,9 @@ defmodule Mix.Tasks.Niku.New do
        elixir: "~> <%= @version %>",
        build_embedded: Mix.env == :prod,
        start_permanent: Mix.env == :prod,
-       deps: deps()]
+       deps: deps(),
+       description: description(),
+       package: package()]
     end
 
     # Configuration for the OTP application
@@ -313,7 +315,19 @@ defmodule Mix.Tasks.Niku.New do
     #
     # Type "mix help deps" for more examples and options
     defp deps do
-      []
+      [{:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
+       {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+       {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}]
+    end
+
+    defp description do
+      "TODO: Add description"
+    end
+
+    defp package do
+      [maintainers: ["<%= @user %>"],
+       licenses: ["MIT"],
+       links: %{"GitHub" => "https://github.com/<%= @user %>/<%= @app %>"}]
     end
   end
   """
@@ -370,7 +384,9 @@ defmodule Mix.Tasks.Niku.New do
       [apps_path: "apps",
        build_embedded: Mix.env == :prod,
        start_permanent: Mix.env == :prod,
-       deps: deps()]
+       deps: deps(),
+       description: description(),
+       package: package()]
     end
 
     # Dependencies can be Hex packages:
@@ -386,7 +402,19 @@ defmodule Mix.Tasks.Niku.New do
     # Dependencies listed here are available only for this project
     # and cannot be accessed from applications inside the apps folder
     defp deps do
-      []
+      [{:ex_doc, "~> 0.14", only: [:dev, :test], runtime: false},
+       {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+       {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}]
+    end
+
+    defp description do
+      "TODO: Add description"
+    end
+
+    defp package do
+      [maintainers: ["<%= @user %>"],
+       licenses: ["MIT"],
+       links: %{"GitHub" => "https://github.com/<%= @user %>/<%= @app %>"}]
     end
   end
   """
