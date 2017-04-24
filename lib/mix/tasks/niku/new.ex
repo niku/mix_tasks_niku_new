@@ -79,6 +79,7 @@ defmodule Mix.Tasks.Niku.New do
     create_file "README.md",  readme_template(assigns)
     create_file ".gitignore", gitignore_text()
     create_file "LICENSE", license_template(assigns)
+    create_file ".travis.yml", dot_travis_template(assigns)
 
     if in_umbrella?() do
       create_file "mix.exs", mixfile_apps_template(assigns)
@@ -137,6 +138,7 @@ defmodule Mix.Tasks.Niku.New do
     create_file "LICENSE", license_template(assigns)
     create_file "README.md", readme_template(assigns)
     create_file "mix.exs", mixfile_umbrella_template(assigns)
+    create_file ".travis.yml", dot_travis_template(assigns)
 
     create_directory "apps"
 
@@ -259,6 +261,47 @@ defmodule Mix.Tasks.Niku.New do
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
+  """
+
+  embed_template :dot_travis, """
+  language: elixir
+  sudo: false
+  otp_release:
+    - 19.3
+  elixir:
+    - 1.4.2
+  env:
+    global:
+      - HEX_USERNAME=<%= @user %>
+      # Follow other language's environment
+      # e.g.) `RACK_ENV=test` has been setted as Default Environment Variables
+      # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
+      - MIX_ENV=test
+  cache:
+    directories:
+      - _build
+      - deps
+  script:
+    - mix credo --strict
+    # https://github.com/jeremyjh/dialyxir#command-line-options
+    # > exit immediately with same exit status as dialyzer. useful for CI
+    - mix dialyzer --halt-exit-status
+    - mix test
+  deploy:
+     # https://docs.travis-ci.com/user/deployment/script/
+     # > `script` must be a scalar pointing to an executable file or command.
+     provider: script
+     # http://yaml.org/spec/1.2/spec.html#id2779048
+     # `>-` indicates the line folding.
+     script: >-
+       mix deps.get &&
+       mix hex.config username "$HEX_USERNAME" &&
+       (mix hex.config encrypted_key "$HEX_ENCRYPTED_KEY" > /dev/null 2>&1) &&
+       (echo "$HEX_PASSPHRASE"\\nY | mix hex.publish) &&
+       mix clean &&
+       mix deps.clean --all
+     on:
+      tags: true
   """
 
   embed_text :gitignore, """
