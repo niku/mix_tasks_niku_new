@@ -110,6 +110,19 @@ defmodule Mix.Tasks.Niku.New do
         #{cd_path(path)}mix test
 
     Run "mix help" for more commands.
+
+    Additionaly, you can use Travis CI if you wanted.
+
+    1. Make a github repository for this project
+    2. Make CI enable
+    3. Set HEX_PASSPHRASE as environment variable on Travis CI
+    4. Encrypt ~/.hex/hex.config and commit encripted file to the repository
+
+        % cd #{path}
+        #{path}% hub create
+        #{path}% travis enable
+        #{path}% travis set HEX_PASSPHRASE *YOUR_HEX_PASSPHRASE_HERE*
+        #{path}% travis encrypt-file ~/.hex/hex.config
     """
     |> String.trim_trailing
     |> Mix.shell.info
@@ -158,6 +171,19 @@ defmodule Mix.Tasks.Niku.New do
     Commands like "mix compile" and "mix test" when executed
     in the umbrella project root will automatically run
     for each application in the apps/ directory.
+
+    Additionaly, you can use Travis CI if you wanted.
+
+    1. Make a github repository for this project
+    2. Make CI enable
+    3. Set HEX_PASSPHRASE as environment variable on Travis CI
+    4. Encrypt ~/.hex/hex.config and commit encripted file to the repository
+
+        % cd #{path}
+        #{path}% hub create
+        #{path}% travis enable
+        #{path}% travis env set HEX_PASSPHRASE *YOUR_HEX_PASSPHRASE_HERE*
+        #{path}% travis encrypt-file ~/.hex/hex.config
     """
     |> String.trim_trailing
     |> Mix.shell.info
@@ -263,7 +289,9 @@ defmodule Mix.Tasks.Niku.New do
   SOFTWARE.
   """
 
-  embed_template :dot_travis, """
+  # We use `\\` (double-backslash) in this template. Usually, It is converted to `\` (single-backslash).
+  # So, we have to use `~S` to avoid unexpected convertion.
+  embed_template :dot_travis, ~S"""
   language: elixir
   sudo: false
   otp_release:
@@ -272,7 +300,6 @@ defmodule Mix.Tasks.Niku.New do
     - 1.4.2
   env:
     global:
-      - HEX_USERNAME=<%= @user %>
       # Follow other language's environment
       # e.g.) `RACK_ENV=test` has been setted as Default Environment Variables
       # https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables
@@ -281,6 +308,12 @@ defmodule Mix.Tasks.Niku.New do
     directories:
       - _build
       - deps
+  before_install:
+    # https://docs.travis-ci.com/user/encrypting-files/
+    # Decrypt the file about configuration(auth and so on) of hex.pm
+    - mkdir -p ~/.hex/
+    # You need execution command `travis encrypt-file ~/.hex/hex.config` in the repository and adding generated line following like:
+    # - openssl aes-256-cbc -K $encrypted_36030c2fae51_key -iv $encrypted_36030c2fae51_iv -in hex.config.enc -out ~/.hex/hex.config -d
   script:
     - mix credo --strict
     # https://github.com/jeremyjh/dialyxir#command-line-options
@@ -295,8 +328,6 @@ defmodule Mix.Tasks.Niku.New do
      # `>-` indicates the line folding.
      script: >-
        mix deps.get &&
-       mix hex.config username "$HEX_USERNAME" &&
-       (mix hex.config encrypted_key "$HEX_ENCRYPTED_KEY" > /dev/null 2>&1) &&
        (echo "$HEX_PASSPHRASE"\\nY | mix hex.publish) &&
        mix clean &&
        mix deps.clean --all
