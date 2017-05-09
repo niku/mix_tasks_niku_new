@@ -3,10 +3,10 @@ defmodule Mix.Tasks.Niku.New do
 
   import Mix.Generator
 
-  @shortdoc "Creates a new Elixir project"
+  @shortdoc "Creates a new Elixir project with some customization"
 
   @moduledoc """
-  Creates a new Elixir project.
+  Creates a new Elixir project with some customization.
   It expects the path of the project as argument.
 
       mix niku.new PATH [--sup] [--module MODULE] [--app APP] [--umbrella]
