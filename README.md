@@ -8,6 +8,7 @@ Creates a new Elixir project with some customization.
   - [credo](https://github.com/rrrene/credo) for a static code analysis
   - [dialyxir](https://github.com/jeremyjh/dialyxir) for a static typing analysis
 - Add `.travis.yml` for [(Travis)CI](https://docs.travis-ci.com/)
+- Add Dockerfile
 
 ## Installation
 

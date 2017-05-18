@@ -80,6 +80,7 @@ defmodule Mix.Tasks.Niku.New do
     create_file ".gitignore", gitignore_text()
     create_file "LICENSE", license_template(assigns)
     create_file ".travis.yml", dot_travis_template(assigns)
+    create_file "Dockerfile", dockerfile_template(assigns)
 
     if in_umbrella?() do
       create_file "mix.exs", mixfile_apps_template(assigns)
@@ -152,6 +153,7 @@ defmodule Mix.Tasks.Niku.New do
     create_file "README.md", readme_template(assigns)
     create_file "mix.exs", mixfile_umbrella_template(assigns)
     create_file ".travis.yml", dot_travis_template(assigns)
+    create_file "Dockerfile", dockerfile_template(assigns)
 
     create_directory "apps"
 
@@ -333,6 +335,21 @@ defmodule Mix.Tasks.Niku.New do
        mix deps.clean --all
      on:
       tags: true
+  """
+
+  embed_template :dockerfile, ~S"""
+  FROM elixir
+  MAINTAINER <%= @user %>
+
+  RUN mkdir /app
+  ADD . /app
+  WORKDIR /app
+
+  RUN mix local.hex --force && \
+      mix deps.get && \
+      mix compile
+
+  CMD ["iex"]
   """
 
   embed_text :gitignore, """
