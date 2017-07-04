@@ -495,8 +495,8 @@ defmodule Mix.Tasks.Niku.New do
     # Dependencies listed here are available only for this project
     # and cannot be accessed from applications inside the apps folder
     defp deps do
-      [{:ex_doc, "~> 0.14", only: [:dev, :test], runtime: false},
-       {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+      [{:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
+       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
        {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}]
     end
 
