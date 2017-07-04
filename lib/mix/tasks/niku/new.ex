@@ -297,7 +297,7 @@ defmodule Mix.Tasks.Niku.New do
   language: elixir
   sudo: false
   otp_release:
-    - 19.3
+    - 20.0
   elixir:
     - 1.4.5
   env:
