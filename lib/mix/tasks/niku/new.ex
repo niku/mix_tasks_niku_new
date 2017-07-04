@@ -299,7 +299,7 @@ defmodule Mix.Tasks.Niku.New do
   otp_release:
     - 19.3
   elixir:
-    - 1.4.4
+    - 1.4.5
   env:
     global:
       # Follow other language's environment
