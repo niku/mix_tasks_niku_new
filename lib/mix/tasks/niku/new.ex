@@ -578,8 +578,9 @@ defmodule Mix.Tasks.Niku.New do
     configs: [
       %{
         #
-        # Run any config using `mix credo -C <name>`. If no config name is given
+        # Run any exec using `mix credo -C <name>`. If no exec name is given
         # "default" is used.
+        #
         name: "default",
         #
         # These are the files included in the analysis:
@@ -587,24 +588,29 @@ defmodule Mix.Tasks.Niku.New do
           #
           # You can give explicit globs or simply directories.
           # In the latter case `**/*.{ex,exs}` will be used.
+        #
           included: ["lib/", "src/", "web/", "apps/"],
           excluded: [~r"/_build/", ~r"/deps/"]
         },
         #
         # If you create your own checks, you must specify the source files for
         # them here, so they can be loaded by Credo before running the analysis.
+        #
         requires: [],
         #
         # Credo automatically checks for updates, like e.g. Hex does.
         # You can disable this behaviour below:
+        #
         check_for_updates: true,
         #
         # If you want to enforce a style guide and need a more traditional linting
         # experience, you can change `strict` to `true` below:
+        #
         strict: false,
         #
         # If you want to use uncolored output by default, you can change `color`
         # to `false` below:
+        #
         color: true,
         #
         # You can customize the parameters of any check by adding a second element
@@ -617,7 +623,6 @@ defmodule Mix.Tasks.Niku.New do
         checks: [
           {Credo.Check.Consistency.ExceptionNames},
           {Credo.Check.Consistency.LineEndings},
-          {Credo.Check.Consistency.MultiAliasImportRequireUse},
           {Credo.Check.Consistency.ParameterPatternMatching},
           {Credo.Check.Consistency.SpaceAroundOperators},
           {Credo.Check.Consistency.SpaceInParentheses},
@@ -625,6 +630,7 @@ defmodule Mix.Tasks.Niku.New do
 
           # For some checks, like AliasUsage, you can only customize the priority
           # Priority values are: `low, normal, high, higher`
+          #
           {Credo.Check.Design.AliasUsage, priority: :low},
 
           # For others you can set parameters
@@ -632,11 +638,13 @@ defmodule Mix.Tasks.Niku.New do
           # If you don't want the `setup` and `test` macro calls in ExUnit tests
           # or the `schema` macro in Ecto schemas to trigger DuplicatedCode, just
           # set the `excluded_macros` parameter to `[:schema, :setup, :test]`.
+          #
           {Credo.Check.Design.DuplicatedCode, excluded_macros: []},
 
           # You can also customize the exit_status of each check.
           # If you don't want TODO comments to cause `mix credo` to fail, just
           # set this value to 0 (zero).
+          #
           {Credo.Check.Design.TagTODO, exit_status: 2},
           {Credo.Check.Design.TagFIXME},
 
@@ -662,6 +670,7 @@ defmodule Mix.Tasks.Niku.New do
           {Credo.Check.Refactor.CondStatements},
           {Credo.Check.Refactor.CyclomaticComplexity},
           {Credo.Check.Refactor.FunctionArity},
+          {Credo.Check.Refactor.LongQuoteBlocks},
           {Credo.Check.Refactor.MatchInCondition},
           {Credo.Check.Refactor.NegatedConditionsInUnless},
           {Credo.Check.Refactor.NegatedConditionsWithElse},
@@ -672,6 +681,7 @@ defmodule Mix.Tasks.Niku.New do
           {Credo.Check.Warning.BoolOperationOnSameValues},
           {Credo.Check.Warning.IExPry},
           {Credo.Check.Warning.IoInspect},
+          {Credo.Check.Warning.LazyLogging},
           {Credo.Check.Warning.OperationOnSameValues},
           {Credo.Check.Warning.OperationWithConstantResult},
           {Credo.Check.Warning.UnusedEnumOperation},
@@ -689,8 +699,10 @@ defmodule Mix.Tasks.Niku.New do
           {Credo.Check.Refactor.AppendSingleItem, false},
           {Credo.Check.Refactor.VariableRebinding, false},
           {Credo.Check.Warning.MapGetUnsafePass, false},
+          {Credo.Check.Consistency.MultiAliasImportRequireUse, false},
 
           # Deprecated checks (these will be deleted after a grace period)
+          #
           {Credo.Check.Readability.Specs, false},
           {Credo.Check.Warning.NameRedeclarationByAssignment, false},
           {Credo.Check.Warning.NameRedeclarationByCase, false},
