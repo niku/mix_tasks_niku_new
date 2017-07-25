@@ -42,7 +42,12 @@ defmodule Mix.Tasks.Niku.New do
 
   """
 
-  @switches [sup: :boolean, umbrella: :boolean, app: :string, module: :string]
+  @switches [
+    app: :string,
+    module: :string,
+    sup: :boolean,
+    umbrella: :boolean
+  ]
 
   @spec run(OptionParser.argv) :: :ok
   def run(argv) do
@@ -73,7 +78,7 @@ defmodule Mix.Tasks.Niku.New do
   end
 
   defp generate(app, mod, path, opts) do
-    assigns = [app: app, mod: mod, otp_app: otp_app(mod, !!opts[:sup]),
+    assigns = [app: app, mod: mod, sup_app: sup_app(mod, !!opts[:sup]),
                version: get_version(System.version), user: System.get_env("USER"), year: Date.utc_today.year]
 
     create_file "README.md",  readme_template(assigns)
@@ -129,21 +134,11 @@ defmodule Mix.Tasks.Niku.New do
     |> Mix.shell.info
   end
 
-  defp otp_app(_mod, false) do
-    "    [extra_applications: [:logger]]"
-  end
+  defp sup_app(_mod, false), do: ""
+  defp sup_app(mod, true), do: ",\n      mod: {#{mod}.Application, []}"
 
-  defp otp_app(mod, true) do
-    "    [extra_applications: [:logger],\n     mod: {#{mod}.Application, []}]"
-  end
-
-  defp cd_path(".") do
-    ""
-  end
-
-  defp cd_path(path) do
-    "cd #{path}\n    "
-  end
+  defp cd_path("."), do: ""
+  defp cd_path(path), do: "cd #{path}\n    "
 
   defp generate_umbrella(_app, mod, path, _opts) do
     assigns = [app: nil, mod: mod, user: System.get_env("USER"), year: Date.utc_today.year]
@@ -192,7 +187,7 @@ defmodule Mix.Tasks.Niku.New do
   end
 
   defp check_application_name!(name, inferred?) do
-    unless name =~ ~r/^[a-z][\w_]*$/ do
+    unless name =~ Regex.recompile!(~r/^[a-z][a-z0-9_]*$/) do
       Mix.raise "Application name must start with a letter and have only lowercase " <>
                 "letters, numbers and underscore, got: #{inspect name}" <>
                 (if inferred? do
@@ -205,7 +200,7 @@ defmodule Mix.Tasks.Niku.New do
   end
 
   defp check_mod_name_validity!(name) do
-    unless name =~ ~r/^[A-Z]\w*(\.[A-Z]\w*)*$/ do
+    unless name =~ Regex.recompile!(~r/^[A-Z]\w*(\.[A-Z]\w*)*$/) do
       Mix.raise "Module name must be a valid Elixir alias (for example: Foo.Bar), got: #{inspect name}"
     end
   end
@@ -257,7 +252,9 @@ defmodule Mix.Tasks.Niku.New do
 
   ```elixir
   def deps do
-    [{:<%= @app %>, "~> 0.1.0"}]
+    [
+      {:<%= @app %>, "~> 0.1.0"}
+    ]
   end
   ```
 
@@ -299,7 +296,7 @@ defmodule Mix.Tasks.Niku.New do
   otp_release:
     - 20.0
   elixir:
-    - 1.4.5
+    - 1.5.0
   env:
     global:
       # Follow other language's environment
@@ -354,16 +351,16 @@ defmodule Mix.Tasks.Niku.New do
 
   embed_text :gitignore, """
   # The directory Mix will write compiled artifacts to.
-  /_build
+  /_build/
 
   # If you run "mix test --cover", coverage assets end up here.
-  /cover
+  /cover/
 
   # The directory Mix downloads your dependencies sources to.
-  /deps
+  /deps/
 
   # Where 3rd-party dependencies like ExDoc output generated docs.
-  /doc
+  /doc/
 
   # Ignore .fetch files in case you like to edit your project deps locally.
   /.fetch
@@ -380,37 +377,31 @@ defmodule Mix.Tasks.Niku.New do
     use Mix.Project
 
     def project do
-      [app: :<%= @app %>,
-       version: "0.1.0",
-       elixir: "~> <%= @version %>",
-       build_embedded: Mix.env == :prod,
-       start_permanent: Mix.env == :prod,
-       deps: deps(),
-       description: description(),
-       package: package()]
+      [
+        app: :<%= @app %>,
+        version: "0.1.0",
+        elixir: "~> <%= @version %>",
+        start_permanent: Mix.env == :prod,
+        deps: deps(),
+        description: description(),
+        package: package()
+      ]
     end
 
-    # Configuration for the OTP application
-    #
-    # Type "mix help compile.app" for more information
+    # Run "mix help compile.app" to learn about applications.
     def application do
-      # Specify extra applications you'll use from Erlang/Elixir
-  <%= @otp_app %>
+      [
+        extra_applications: [:logger]<%= @sup_app %>
+      ]
     end
 
-    # Dependencies can be Hex packages:
-    #
-    #   {:my_dep, "~> 0.3.0"}
-    #
-    # Or git/path repositories:
-    #
-    #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-    #
-    # Type "mix help deps" for more examples and options
+    # Run "mix help deps" to learn about dependencies.
     defp deps do
-      [{:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
-       {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
-       {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}]
+      [
+        {:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
+        {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+        {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}
+      ]
     end
 
     defp description do
@@ -430,41 +421,33 @@ defmodule Mix.Tasks.Niku.New do
     use Mix.Project
 
     def project do
-      [app: :<%= @app %>,
-       version: "0.1.0",
-       build_path: "../../_build",
-       config_path: "../../config/config.exs",
-       deps_path: "../../deps",
-       lockfile: "../../mix.lock",
-       elixir: "~> <%= @version %>",
-       build_embedded: Mix.env == :prod,
-       start_permanent: Mix.env == :prod,
-       deps: deps()]
+      [
+        app: :<%= @app %>,
+        version: "0.1.0",
+        build_path: "../../_build",
+        config_path: "../../config/config.exs",
+        deps_path: "../../deps",
+        lockfile: "../../mix.lock",
+        elixir: "~> <%= @version %>",
+        start_permanent: Mix.env == :prod,
+        deps: deps()
+      ]
     end
 
-    # Configuration for the OTP application
-    #
-    # Type "mix help compile.app" for more information
+    # Run "mix help compile.app" to learn about applications.
     def application do
-      # Specify extra applications you'll use from Erlang/Elixir
-  <%= @otp_app %>
+      [
+        extra_applications: [:logger]<%= @sup_app %>
+      ]
     end
 
-    # Dependencies can be Hex packages:
-    #
-    #   {:my_dep, "~> 0.3.0"}
-    #
-    # Or git/path repositories:
-    #
-    #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-    #
-    # To depend on another app inside the umbrella:
-    #
-    #   {:my_app, in_umbrella: true}
-    #
-    # Type "mix help deps" for more examples and options
+    # Run "mix help deps" to learn about dependencies.
     defp deps do
-      []
+      [
+        # {:dep_from_hexpm, "~> 0.3.0"},
+        # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+        # {:sibling_app_in_umbrella, in_umbrella: true},
+      ]
     end
   end
   """
@@ -474,30 +457,26 @@ defmodule Mix.Tasks.Niku.New do
     use Mix.Project
 
     def project do
-      [apps_path: "apps",
-       build_embedded: Mix.env == :prod,
-       start_permanent: Mix.env == :prod,
-       deps: deps(),
-       description: description(),
-       package: package()]
+      [
+        apps_path: "apps",
+        start_permanent: Mix.env == :prod,
+        deps: deps(),
+        description: description(),
+        package: package()
+      ]
     end
 
-    # Dependencies can be Hex packages:
+    # Dependencies listed here are available only for this
+    # project and cannot be accessed from applications inside
+    # the apps folder.
     #
-    #   {:my_dep, "~> 0.3.0"}
-    #
-    # Or git/path repositories:
-    #
-    #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-    #
-    # Type "mix help deps" for more examples and options.
-    #
-    # Dependencies listed here are available only for this project
-    # and cannot be accessed from applications inside the apps folder
+    # Run "mix help deps" for examples and options.
     defp deps do
-      [{:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
-       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
-       {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}]
+      [
+        {:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
+        {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+        {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}
+      ]
     end
 
     defp description do
@@ -523,15 +502,15 @@ defmodule Mix.Tasks.Niku.New do
   # if you want to provide default values for your application for
   # 3rd-party users, it should be done in your "mix.exs" file.
 
-  # You can configure for your application as:
+  # You can configure your application as:
   #
   #     config :<%= @app %>, key: :value
   #
-  # And access this configuration in your application as:
+  # and access this configuration in your application as:
   #
   #     Application.get_env(:<%= @app %>, :key)
   #
-  # Or configure a 3rd-party app:
+  # You can also configure a 3rd-party app:
   #
   #     config :logger, level: :info
   #
@@ -740,22 +719,20 @@ defmodule Mix.Tasks.Niku.New do
 
   embed_template :lib_app, """
   defmodule <%= @mod %>.Application do
-    # See http://elixir-lang.org/docs/stable/elixir/Application.html
+    # See https://hexdocs.pm/elixir/Application.html
     # for more information on OTP Applications
     @moduledoc false
 
     use Application
 
     def start(_type, _args) do
-      import Supervisor.Spec, warn: false
-
-      # Define workers and child supervisors to be supervised
+      # List all child processes to be supervised
       children = [
-        # Starts a worker by calling: <%= @mod %>.Worker.start_link(arg1, arg2, arg3)
-        # worker(<%= @mod %>.Worker, [arg1, arg2, arg3]),
+        # Starts a worker by calling: <%= @mod %>.Worker.start_link(arg)
+        # {<%= @mod %>.Worker, arg},
       ]
 
-      # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
+      # See https://hexdocs.pm/elixir/Supervisor.html
       # for other strategies and supported options
       opts = [strategy: :one_for_one, name: <%= @mod %>.Supervisor]
       Supervisor.start_link(children, opts)
@@ -768,8 +745,8 @@ defmodule Mix.Tasks.Niku.New do
     use ExUnit.Case
     doctest <%= @mod %>
 
-    test "the truth" do
-      assert 1 + 1 == 2
+    test "greets the world" do
+      assert <%= @mod %>.hello() == :world
     end
   end
   """
