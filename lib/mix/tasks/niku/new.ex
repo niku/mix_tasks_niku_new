@@ -399,7 +399,7 @@ defmodule Mix.Tasks.Niku.New do
     defp deps do
       [
         {:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
-        {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+        {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}
       ]
     end
@@ -474,7 +474,7 @@ defmodule Mix.Tasks.Niku.New do
     defp deps do
       [
         {:ex_doc, "~> 0.16", only: [:dev, :test], runtime: false},
-        {:credo, "~> 0.7", only: [:dev, :test], runtime: false},
+        {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 0.5", only: [:dev, :test], runtime: false}
       ]
     end
@@ -577,11 +577,6 @@ defmodule Mix.Tasks.Niku.New do
         #
         requires: [],
         #
-        # Credo automatically checks for updates, like e.g. Hex does.
-        # You can disable this behaviour below:
-        #
-        check_for_updates: true,
-        #
         # If you want to enforce a style guide and need a more traditional linting
         # experience, you can change `strict` to `true` below:
         #
@@ -610,7 +605,7 @@ defmodule Mix.Tasks.Niku.New do
           # For some checks, like AliasUsage, you can only customize the priority
           # Priority values are: `low, normal, high, higher`
           #
-          {Credo.Check.Design.AliasUsage, priority: :low},
+          {Credo.Check.Design.AliasUsage, false},
 
           # For others you can set parameters
 
@@ -671,6 +666,7 @@ defmodule Mix.Tasks.Niku.New do
           {Credo.Check.Warning.UnusedRegexOperation},
           {Credo.Check.Warning.UnusedStringOperation},
           {Credo.Check.Warning.UnusedTupleOperation},
+          {Credo.Check.Warning.RaiseInsideRescue},
 
           # Controversial and experimental checks (opt-in, just remove `, false`)
           #
